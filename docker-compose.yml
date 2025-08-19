@@ -1,34 +1,4 @@
 services:
-  traefik:
-    image: traefik:v3.5
-    container_name: traefik
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /srv/apps/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
-      - /srv/apps/traefik/acme.json:/acme.json
-    environment:
-      - DUCKDNS_TOKEN=${DUCKDNS_TOKEN}
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.api.rule=Host(`traefik.duckdns.org`)"
-      - "traefik.http.routers.api.entrypoints=websecure"
-      - "traefik.http.routers.api.tls.certresolver=duckdns"
-      - "traefik.http.routers.api.service=api@internal"
-    restart: unless-stopped
-
-  duckdns:
-    image: linuxserver/duckdns
-    container_name: duckdns
-    environment:
-      - SUBDOMAINS=traefik,whoami1,whoami2
-      - TOKEN=${DUCKDNS_TOKEN}
-      - LOG_FILE=false
-    volumes:
-      - /srv/apps/duckdns/config:/config 
-    restart: unless-stopped
 
   fail2ban:
     image: lscr.io/linuxserver/fail2ban:latest
@@ -38,9 +8,9 @@ services:
       - NET_RAW
     network_mode: host
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Etc/UTC
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
       - VERBOSITY=-vv #optional
     volumes:
       - /srv/apps/fail2ban/config:/config
@@ -64,13 +34,13 @@ services:
       - WIREGUARD_ADDRESSES=${WR_ADDRESS}
       - WIREGUARD_DNS=${WR_DNS}
       - SERVER_COUNTRIES=${SRV_COUNTIRES}
-      - TZ=Europe/Rome
-      - FIREWALL_VPN_INPUT_PORTS=8080,33844,8989,7878,8787,6767,9696,8191,8082,5299,5030,5031,33845
+      - TZ=${TZ}
+      - FIREWALL_VPN_INPUT_PORTS=8081,33844,8989,7878,8787,6767,9696,8191,8082,5299,5030,5031,33845
       - HEALTH_SUCCESS_WAIT_DURATION=99999h
     volumes:
       - /srv/apps/gluetun:/gluetun
     ports:
-      - "8080:8080"           # qBittorrent Web UI
+      - "8081:8081"           # qBittorrent Web UI
       - "33844:33844"         # qBittorrent incoming TCP torrent port
       - "33844:33844/udp"     # qBittorrent incoming UDP torrent port
       - "8989:8989"           # Sonarr
@@ -93,9 +63,9 @@ services:
     network_mode: service:gluetun
     container_name: lazylibrarian
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Rome
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
       - DOCKER_MODS=linuxserver/mods:universal-calibre|linuxserver/mods:lazylibrarian-ffmpeg
     volumes:
       - /srv/apps/lazylibrarian/data:/config
@@ -112,7 +82,7 @@ services:
     environment:
       PUID: 1000
       PGID: 1000
-      TZ: Europe/Rome
+      TZ: ${TZ}
     volumes:
       - /srv/apps/sonarr:/config
       - /mnt/media/downloads:/downloads
@@ -128,7 +98,7 @@ services:
     environment:
       PUID: 1000
       PGID: 1000
-      TZ: Europe/Rome
+      TZ: ${TZ}
     volumes:
       - /srv/apps/radarr:/config
       - /mnt/media/downloads:/downloads
@@ -144,7 +114,7 @@ services:
     environment:
       PUID: 1000
       PGID: 1000
-      TZ: Europe/Rome
+      TZ: ${TZ}
     volumes:
       - /srv/apps/bazarr:/config
       - /mnt/media/library/movies:/movies
@@ -161,8 +131,8 @@ services:
     environment:
       PUID: 1000
       PGID: 1000
-      TZ: Europe/Rome
-      WEBUI_PORT: 8080
+      TZ: ${TZ}
+      WEBUI_PORT: 8081
       TORRENTING_PORT: 6881
     volumes:
       - /srv/apps/qbittorrent:/config
@@ -176,9 +146,9 @@ services:
     network_mode: service:gluetun
     container_name: slskd
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Rome
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
       - SLSKD_REMOTE_CONFIGURATION=true
     volumes:
       - /srv/apps/slskd:/app
@@ -195,7 +165,7 @@ services:
     environment:
       PUID: 1000
       PGID: 1000
-      TZ: Europe/Rome
+      TZ: ${TZ}
     volumes:
       - /srv/apps/prowlarr:/config
     restart: unless-stopped
@@ -210,7 +180,7 @@ services:
       PUID: 1000
       PGID: 1000
       UMASK: 002
-      TZ: Europe/Rome
+      TZ: ${TZ}
     volumes:
       - /srv/apps/sabnzbd/config:/config
       - /mnt/media/downloads:/data
@@ -223,7 +193,7 @@ services:
     container_name: flaresolverr
     network_mode: service:gluetun
     environment:
-      TZ: Europe/Rome
+      TZ: ${TZ}
     restart: unless-stopped
     depends_on:
       - gluetun
@@ -234,7 +204,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - TZ=Europe/Rome
+      - TZ=${TZ}
     command: --interval 3600 --cleanup
     restart: unless-stopped
 
@@ -244,7 +214,7 @@ services:
       - "8265:8265"  # Web UI
       - "8266:8266"  # Node API
     environment:
-      TZ: Europe/Rome
+      TZ: ${TZ}
       PUID: 1000
       PGID: 1000
       UMASK_SET: 002
@@ -256,8 +226,7 @@ services:
       authSecretKey: 
     volumes:
       - /srv/apps/tdarr/server:/app/server
-      - /srv/apps/tdarr/configs:/app/configs
-      - /srv/apps/tdarr:/config
+      - /srv/apps/tdarr/config:/app/configs
       - /mnt/media/apps/tdarr/temp:/temp
       - /mnt/media/library:/media
     networks:
@@ -271,7 +240,7 @@ services:
       PUID: 1000
       PGID: 1000
       UMASK: 002
-      TZ: Europe/Rome
+      TZ: ${TZ}
     volumes:
       - /srv/apps/unpackerr:/config
       - /mnt/media/downloads:/data
@@ -286,9 +255,9 @@ services:
       dockerfile: Dockerfile
     container_name: beets
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Rome
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
     volumes:
       - /srv/apps/beets/config:/config
       - /mnt/media/library/music:/music
@@ -308,7 +277,7 @@ services:
       PUID: 1000
       PGID: 1000
       UMASK: 002
-      TZ: Europe/Rome
+      TZ: ${TZ}
     volumes:
       - /srv/apps/jellyseerr:/config
     networks:
@@ -322,7 +291,7 @@ services:
       PUID: 1000
       PGID: 1000
       UMASK: 002
-      TZ: Europe/Rome
+      TZ: ${TZ}
     volumes:
       - /srv/apps/qbitmanage/config:/config
       - /mnt/media/downloads:/downloads
@@ -344,29 +313,24 @@ services:
       - /mnt/media/library/anime-movies:/anime-movies:ro
       - /mnt/media/fonts:/usr/local/share/fonts/custom:ro
     ports:
-      - "8096:8096"
+      - "8096:8096" # Keep for local discovery or comment it out
       - "8920:8920"
       - "7359:7359/udp"
       - "1900:1900/udp"
     environment:
-      TZ: Europe/Rome
+      TZ: ${TZ}
     networks:
      media_net:
       ipv4_address: 172.20.0.8
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.whoami1.rule=Host(`whoami1.duckdns.org`)"
-      - "traefik.http.routers.whoami1.entrypoints=websecure"
-      - "traefik.http.routers.whoami1.tls.certresolver=duckdns"
     restart: unless-stopped
 
   calibre-web:
     image: lscr.io/linuxserver/calibre-web:latest
     container_name: calibre-web
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Rome
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
       - DOCKER_MODS=linuxserver/mods:universal-calibre
       - OAUTHLIB_RELAX_TOKEN_SCOPE=1
     volumes:
@@ -374,35 +338,25 @@ services:
       - /mnt/media/library/books:/books
       - /mnt/media/library/books/:/audiobooks
     ports:
-      - 8083:8083
+      - 8083:8083 # Keep for local discovery or comment it out
     networks:
      media_net:
       ipv4_address: 172.20.0.9
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.whoami1.rule=Host(`whoami1.duckdns.org`)"
-      - "traefik.http.routers.whoami1.entrypoints=websecure"
-      - "traefik.http.routers.whoami1.tls.certresolver=duckdns"
     restart: unless-stopped
   
   navidrome:
     image: deluan/navidrome:latest
     user: 1000:1000
     ports:
-      - "4533:4533"
+      - "4533:4533" # Keep for local discovery or comment it out
     environment:
-      TZ: Europe/Rome
+      TZ: ${TZ}
       ND_LOGLEVEL: info
       ND_SCANINTERVAL: 1h
       ND_SESSIONTIMEOUT: 24h
     volumes:
       - "/srv/apps/navidrome:/data"
       - "/mnt/media/library/music:/music:ro"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.whoami1.rule=Host(`whoami1.duckdns.org`)"
-      - "traefik.http.routers.whoami1.entrypoints=websecure"
-      - "traefik.http.routers.whoami1.tls.certresolver=duckdns"
     networks:
      media_net:
       ipv4_address: 172.20.0.10

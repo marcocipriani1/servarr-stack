@@ -55,7 +55,7 @@ If you are using Proxmox with an unprivileged LXC container and a Proxmox-mounte
 
 ---
 
-## Step 3: Deploy the Arr Stack
+## Step 4: Deploy the Arr Stack
 
 1. **Start the stack**:
    ```bash
