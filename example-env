@@ -19,6 +19,4 @@ SRV_COUNTIRES=Netherlands,Sweden
 # ========================
 # Container user/group IDs
 # ========================
-PUID=1000
-PGID=1000
 TZ=Etc/UTC
