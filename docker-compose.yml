@@ -35,12 +35,12 @@ services:
       - WIREGUARD_DNS=${WR_DNS}
       - SERVER_COUNTRIES=${SRV_COUNTIRES}
       - TZ=${TZ}
-      - FIREWALL_VPN_INPUT_PORTS=8081,33844,8989,7878,8787,6767,9696,8191,8082,5299,5030,5031,33845
+      - FIREWALL_VPN_INPUT_PORTS=8080,33844,8989,7878,8787,6767,9696,8191,8082,5299,5030,5031,33845
       - HEALTH_SUCCESS_WAIT_DURATION=99999h
     volumes:
       - /srv/apps/gluetun:/gluetun
     ports:
-      - "8081:8081"           # qBittorrent Web UI
+      - "8081:8080"           # qBittorrent Web UI
       - "33844:33844"         # qBittorrent incoming TCP torrent port
       - "33844:33844/udp"     # qBittorrent incoming UDP torrent port
       - "8989:8989"           # Sonarr
@@ -132,7 +132,7 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=${TZ}
-      - WEBUI_PORT=8081
+      - WEBUI_PORT=8080
       - TORRENTING_PORT=6881
     volumes:
       - /srv/apps/qbittorrent:/config
