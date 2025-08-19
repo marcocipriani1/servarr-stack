@@ -8,8 +8,8 @@ services:
       - NET_RAW
     network_mode: host
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
+      - PUID=1000
+      - PGID=1000
       - TZ=${TZ}
       - VERBOSITY=-vv #optional
     volumes:
@@ -63,8 +63,8 @@ services:
     network_mode: service:gluetun
     container_name: lazylibrarian
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
+      - PUID=1000
+      - PGID=1000
       - TZ=${TZ}
       - DOCKER_MODS=linuxserver/mods:universal-calibre|linuxserver/mods:lazylibrarian-ffmpeg
     volumes:
@@ -80,9 +80,9 @@ services:
     image: lscr.io/linuxserver/sonarr:latest
     network_mode: service:gluetun
     environment:
-      PUID: 1000
-      PGID: 1000
-      TZ: ${TZ}
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
     volumes:
       - /srv/apps/sonarr:/config
       - /mnt/media/downloads:/downloads
@@ -96,9 +96,9 @@ services:
     image: lscr.io/linuxserver/radarr:latest
     network_mode: service:gluetun
     environment:
-      PUID: 1000
-      PGID: 1000
-      TZ: ${TZ}
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
     volumes:
       - /srv/apps/radarr:/config
       - /mnt/media/downloads:/downloads
@@ -112,9 +112,9 @@ services:
     image: lscr.io/linuxserver/bazarr:latest
     network_mode: service:gluetun
     environment:
-      PUID: 1000
-      PGID: 1000
-      TZ: ${TZ}
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
     volumes:
       - /srv/apps/bazarr:/config
       - /mnt/media/library/movies:/movies
@@ -129,11 +129,11 @@ services:
     image: qbittorrentofficial/qbittorrent-nox:latest
     network_mode: service:gluetun
     environment:
-      PUID: 1000
-      PGID: 1000
-      TZ: ${TZ}
-      WEBUI_PORT: 8081
-      TORRENTING_PORT: 6881
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+      - WEBUI_PORT=8081
+      - TORRENTING_PORT=6881
     volumes:
       - /srv/apps/qbittorrent:/config
       - /mnt/media/downloads:/downloads
@@ -146,8 +146,8 @@ services:
     network_mode: service:gluetun
     container_name: slskd
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
+      - PUID=1000
+      - PGID=1000
       - TZ=${TZ}
       - SLSKD_REMOTE_CONFIGURATION=true
     volumes:
@@ -163,9 +163,9 @@ services:
     image: lscr.io/linuxserver/prowlarr:latest
     network_mode: service:gluetun
     environment:
-      PUID: 1000
-      PGID: 1000
-      TZ: ${TZ}
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
     volumes:
       - /srv/apps/prowlarr:/config
     restart: unless-stopped
@@ -176,11 +176,11 @@ services:
     image: ghcr.io/hotio/sabnzbd
     network_mode: service:gluetun
     environment:
-      WEBUI_PORTS: 8082
-      PUID: 1000
-      PGID: 1000
-      UMASK: 002
-      TZ: ${TZ}
+      - WEBUI_PORTS=8082
+      - PUID=1000
+      - PGID=1000
+      - UMASK=002
+      - TZ=${TZ}
     volumes:
       - /srv/apps/sabnzbd/config:/config
       - /mnt/media/downloads:/data
@@ -193,7 +193,7 @@ services:
     container_name: flaresolverr
     network_mode: service:gluetun
     environment:
-      TZ: ${TZ}
+      - TZ=${TZ}
     restart: unless-stopped
     depends_on:
       - gluetun
@@ -214,16 +214,16 @@ services:
       - "8265:8265"  # Web UI
       - "8266:8266"  # Node API
     environment:
-      TZ: ${TZ}
-      PUID: 1000
-      PGID: 1000
-      UMASK_SET: 002
-      serverIP: 0.0.0.0
-      serverPort: 8266
-      webUIPort: 8265
-      internalNode: "false"
-      auth: "true"
-      authSecretKey: 
+      - TZ=${TZ}
+      - PUID=1000
+      - PGID=1000
+      - UMASK_SET=002
+      - serverIP=0.0.0.0
+      - serverPort=8266
+      - webUIPort=8265
+      - internalNode=false
+      - auth=true
+      - authSecretKey= 
     volumes:
       - /srv/apps/tdarr/server:/app/server
       - /srv/apps/tdarr/config:/app/configs
@@ -237,10 +237,10 @@ services:
   unpackerr:
     image: ghcr.io/hotio/unpackerr
     environment:
-      PUID: 1000
-      PGID: 1000
-      UMASK: 002
-      TZ: ${TZ}
+      - PUID=1000
+      - PGID=1000
+      - UMASK=002
+      - TZ=${TZ}
     volumes:
       - /srv/apps/unpackerr:/config
       - /mnt/media/downloads:/data
@@ -255,8 +255,8 @@ services:
       dockerfile: Dockerfile
     container_name: beets
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
+      - PUID=1000
+      - PGID=1000
       - TZ=${TZ}
     volumes:
       - /srv/apps/beets/config:/config
@@ -274,10 +274,10 @@ services:
     ports:
       - "5055:5055"
     environment:
-      PUID: 1000
-      PGID: 1000
-      UMASK: 002
-      TZ: ${TZ}
+      - PUID=1000
+      - PGID=1000
+      - UMASK=002
+      - TZ= ${TZ}
     volumes:
       - /srv/apps/jellyseerr:/config
     networks:
@@ -288,10 +288,10 @@ services:
   qbitmanage:
     image: ghcr.io/hotio/qbitmanage
     environment:
-      PUID: 1000
-      PGID: 1000
-      UMASK: 002
-      TZ: ${TZ}
+      - PUID=1000
+      - PGID=1000
+      - UMASK=002
+      - TZ=${TZ}
     volumes:
       - /srv/apps/qbitmanage/config:/config
       - /mnt/media/downloads:/downloads
@@ -313,12 +313,12 @@ services:
       - /mnt/media/library/anime-movies:/anime-movies:ro
       - /mnt/media/fonts:/usr/local/share/fonts/custom:ro
     ports:
-      - "8096:8096" # Keep for local discovery or comment it out
+      - "8096:8096" 
       - "8920:8920"
       - "7359:7359/udp"
       - "1900:1900/udp"
     environment:
-      TZ: ${TZ}
+      - TZ=${TZ}
     networks:
      media_net:
       ipv4_address: 172.20.0.8
@@ -328,8 +328,8 @@ services:
     image: lscr.io/linuxserver/calibre-web:latest
     container_name: calibre-web
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
+      - PUID=1000
+      - PGID=1000
       - TZ=${TZ}
       - DOCKER_MODS=linuxserver/mods:universal-calibre
       - OAUTHLIB_RELAX_TOKEN_SCOPE=1
@@ -338,7 +338,7 @@ services:
       - /mnt/media/library/books:/books
       - /mnt/media/library/books/:/audiobooks
     ports:
-      - 8083:8083 # Keep for local discovery or comment it out
+      - 8083:8083 
     networks:
      media_net:
       ipv4_address: 172.20.0.9
@@ -348,12 +348,12 @@ services:
     image: deluan/navidrome:latest
     user: 1000:1000
     ports:
-      - "4533:4533" # Keep for local discovery or comment it out
+      - "4533:4533" 
     environment:
-      TZ: ${TZ}
-      ND_LOGLEVEL: info
-      ND_SCANINTERVAL: 1h
-      ND_SESSIONTIMEOUT: 24h
+      - TZ=${TZ}
+      - ND_LOGLEVEL=info
+      - ND_SCANINTERVAL=1h
+      - ND_SESSIONTIMEOUT=24h
     volumes:
       - "/srv/apps/navidrome:/data"
       - "/mnt/media/library/music:/music:ro"
