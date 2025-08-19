@@ -40,7 +40,7 @@ services:
     volumes:
       - /srv/apps/gluetun:/gluetun
     ports:
-      - "8081:8080"           # qBittorrent Web UI
+      - "8080:8080"           # qBittorrent Web UI
       - "33844:33844"         # qBittorrent incoming TCP torrent port
       - "33844:33844/udp"     # qBittorrent incoming UDP torrent port
       - "8989:8989"           # Sonarr
