@@ -1,9 +1,4 @@
 # ========================
-# Traefik / DuckDNS
-# ========================
-DUCKDNS_TOKEN=your-duckdns-api-token-here
-
-# ========================
 # Gluetun (VPN) Settings
 # ========================
 # Your WireGuard private key from AirVPN (or your provider)
