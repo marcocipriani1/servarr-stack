@@ -1,24 +1,5 @@
 services:
 
-  fail2ban:
-    image: lscr.io/linuxserver/fail2ban:latest
-    container_name: fail2ban
-    cap_add:
-      - NET_ADMIN
-      - NET_RAW
-    network_mode: host
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=${TZ}
-      - VERBOSITY=-vv #optional
-    volumes:
-      - /srv/apps/fail2ban/config:/config
-      - /var/log:/var/log:ro
-      - /srv/apps/jellyfin/config/log:/remotelogs/jellyfin:ro #optional
-      - /srv/apps/navidrome/navidrome.log:/remotelogs/navidrome:ro #optional
-    restart: unless-stopped
-
   gluetun:
     image: qmcgaw/gluetun
     container_name: gluetun

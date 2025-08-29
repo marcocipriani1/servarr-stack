@@ -24,7 +24,7 @@ echo ""
 mkdir -p "$BASE_DIR/apps"
 
 # Reverse proxy & network utilities
-mkdir -p "$BASE_DIR/apps"/{traefik,fail2ban/config,duckdns/config,gluetun}
+mkdir -p "$BASE_DIR/apps"/{traefik,duckdns/config,gluetun}
 
 # Download management
 mkdir -p "$BASE_DIR/apps"/{slskd,unpackerr/{config,cache,logs},qbitmanage/config,qbittorrent,jellyseerr/config,sabnzbd/config,beets/config}
@@ -99,8 +99,6 @@ if [ "$confirm" != "yes" ]; then
     echo "$BASE_DIR/"
     echo "└── apps/ # App configurations"
     echo "    ├── traefik/"
-    echo "    ├── fail2ban/"
-    echo "    │   └── config/"
     echo "    ├── duckdns/"
     echo "    │   └── config/"
     echo "    ├── gluetun/"
