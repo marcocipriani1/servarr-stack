@@ -96,11 +96,11 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Etc/UTC
+      - TZ=${TZ}
     volumes:
-      - /path/to/lidarr/config:/config
-      - /path/to/music:/music #optional
-      - /path/to/downloads:/downloads #optional
+      - /srv/apps/lidarr/config:/config
+      - /mnt/media/library/music:/music #optional
+      - /mnt/media/downloads:/downloads #optional
     restart: unless-stopped
 
   bazarr:
