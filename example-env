@@ -20,3 +20,8 @@ SRV_COUNTIRES=Netherlands,Sweden
 # Container user/group IDs
 # ========================
 TZ=Etc/UTC
+
+# ========================
+# Homarr encryption key
+# ========================
+SECRET_KEY=GENERATE-A-KEY

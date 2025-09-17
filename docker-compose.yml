@@ -16,7 +16,7 @@ services:
       - WIREGUARD_DNS=${WR_DNS}
       - SERVER_COUNTRIES=${SRV_COUNTIRES}
       - TZ=${TZ}
-      - FIREWALL_VPN_INPUT_PORTS=8080,33844,8989,7878,8787,6767,9696,8191,8082,5299,5030,5031,33845,8686
+      - FIREWALL_VPN_INPUT_PORTS=8080,33844,8989,7878,8787,6767,9696,8191,8082,5299,5030,5031,33845
       - HEALTH_SUCCESS_WAIT_DURATION=99999h
     volumes:
       - /srv/apps/gluetun:/gluetun
@@ -34,7 +34,6 @@ services:
       - "5030:5030"           # slskd HTTP port
       - "5031:5031"           # slskd HTTPS port self signed certificate
       - "33845:33845"         # slskd incoming connections port
-      - "8686:8686"           # lidarr port
     networks:
      media_net:
       ipv4_address: 172.20.0.2
@@ -86,22 +85,6 @@ services:
       - /mnt/media/downloads:/downloads
       - /mnt/media/library/movies:/movies
       - /mnt/media/library/anime-movies:/anime
-    restart: unless-stopped
-    depends_on:
-      - gluetun
-
-  lidarr:
-    image: lscr.io/linuxserver/lidarr:latest
-    container_name: lidarr
-    network_mode: service:gluetun
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=${TZ}
-    volumes:
-      - /srv/apps/lidarr/config:/config
-      - /mnt/media/library/music:/music #optional
-      - /mnt/media/downloads:/downloads #optional
     restart: unless-stopped
     depends_on:
       - gluetun
@@ -359,6 +342,35 @@ services:
      media_net:
       ipv4_address: 172.20.0.10
     restart: unless-stopped
+
+  homarr:
+    container_name: homarr
+    image: ghcr.io/homarr-labs/homarr:latest
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /srv/apps/homarr/appdata:/appdata
+    environment:
+      - SECRET_ENCRYPTION_KEY=${SECRET_KEY}
+    networks:
+     media_net:
+      ipv4_address: 172.20.0.11
+    ports:
+      - '7575:7575'
+
+  huntarr:
+    image: huntarr/huntarr:latest
+    container_name: huntarr
+    ports:
+      - "9705:9705"
+    volumes:
+      - /srv/apps/huntarr:/config
+    environment:
+      - TZ=${TZ}
+    networks:
+     media_net:
+      ipv4_address: 172.20.0.12
+    restart: always
 
 
 
