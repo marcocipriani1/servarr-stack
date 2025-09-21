@@ -1,4 +1,13 @@
+networks:
+  media_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
 services:
+  #####################
+  ##    VPN tunnel   ##
+  #####################
 
   gluetun:
     image: qmcgaw/gluetun
@@ -16,95 +25,25 @@ services:
       - WIREGUARD_DNS=${WR_DNS}
       - SERVER_COUNTRIES=${SRV_COUNTIRES}
       - TZ=${TZ}
-      - FIREWALL_VPN_INPUT_PORTS=8080,33844,8989,7878,8787,6767,9696,8191,8082,5299,5030,5031,33845
+      - FIREWALL_VPN_INPUT_PORTS=8080,33844,8787,5030,5031,33845
       - HEALTH_SUCCESS_WAIT_DURATION=99999h
     volumes:
       - /srv/apps/gluetun:/gluetun
     ports:
-      - "8080:8080"           # qBittorrent Web UI
-      - "33844:33844"         # qBittorrent incoming TCP torrent port
-      - "33844:33844/udp"     # qBittorrent incoming UDP torrent port
-      - "8989:8989"           # Sonarr
-      - "7878:7878"           # Radarr
-      - "6767:6767"           # Bazarr
-      - "9696:9696"           # Prowlarr
-      - "8191:8191"           # Flaresolverr
-      - "5299:5299"           # Lazylibrarian
-      - "8082:8082"           # Sabnzbd
-      - "5030:5030"           # slskd HTTP port
-      - "5031:5031"           # slskd HTTPS port self signed certificate
-      - "33845:33845"         # slskd incoming connections port
+      - "8080:8080" # qBittorrent Web UI
+      - "33844:33844" # qBittorrent incoming TCP torrent port
+      - "33844:33844/udp" # qBittorrent incoming UDP torrent port
+      - "5030:5030" # slskd HTTP port
+      - "5031:5031" # slskd HTTPS port self signed certificate
+      - "33845:33845" # slskd incoming connections port
     networks:
-     media_net:
-      ipv4_address: 172.20.0.2
+      media_net:
+        ipv4_address: 172.20.0.2
     restart: unless-stopped
 
-  lazylibrarian:
-    image: lscr.io/linuxserver/lazylibrarian:latest
-    network_mode: service:gluetun
-    container_name: lazylibrarian
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=${TZ}
-      - DOCKER_MODS=linuxserver/mods:universal-calibre|linuxserver/mods:lazylibrarian-ffmpeg
-    volumes:
-      - /srv/apps/lazylibrarian/data:/config
-      - /mnt/media/downloads/:/downloads
-      - /mnt/media/library/books:/books
-      - /mnt/media/library/books/:/audiobooks
-    restart: unless-stopped
-    depends_on:
-      - gluetun
-
-  sonarr:
-    image: lscr.io/linuxserver/sonarr:latest
-    network_mode: service:gluetun
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=${TZ}
-    volumes:
-      - /srv/apps/sonarr:/config
-      - /mnt/media/downloads:/downloads
-      - /mnt/media/library/tv:/tv
-      - /mnt/media/library/anime-series:/anime
-    restart: unless-stopped
-    depends_on:
-      - gluetun
-
-  radarr:
-    image: lscr.io/linuxserver/radarr:latest
-    network_mode: service:gluetun
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=${TZ}
-    volumes:
-      - /srv/apps/radarr:/config
-      - /mnt/media/downloads:/downloads
-      - /mnt/media/library/movies:/movies
-      - /mnt/media/library/anime-movies:/anime
-    restart: unless-stopped
-    depends_on:
-      - gluetun
-
-  bazarr:
-    image: lscr.io/linuxserver/bazarr:latest
-    network_mode: service:gluetun
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=${TZ}
-    volumes:
-      - /srv/apps/bazarr:/config
-      - /mnt/media/library/movies:/movies
-      - /mnt/media/library/tv:/tv
-      - /mnt/media/library/anime-series:/anime-series
-      - /mnt/media/library/anime-movies:/anime-movies
-    restart: unless-stopped
-    depends_on:
-      - gluetun
+  #####################
+  ## File downloaders##
+  #####################
 
   qbittorrent:
     image: qbittorrentofficial/qbittorrent-nox:latest
@@ -140,22 +79,10 @@ services:
     depends_on:
       - gluetun
 
-  prowlarr:
-    image: lscr.io/linuxserver/prowlarr:latest
-    network_mode: service:gluetun
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=${TZ}
-    volumes:
-      - /srv/apps/prowlarr:/config
-    restart: unless-stopped
-    depends_on:
-      - gluetun
-    
   sabnzbd:
     image: ghcr.io/hotio/sabnzbd
-    network_mode: service:gluetun
+    ports:
+      - "8082:8082"
     environment:
       - WEBUI_PORTS=8082
       - PUID=1000
@@ -165,70 +92,120 @@ services:
     volumes:
       - /srv/apps/sabnzbd/config:/config
       - /mnt/media/downloads:/data
-    restart: unless-stopped
-    depends_on:
-      - gluetun
-
-  flaresolverr:
-    image: flaresolverr/flaresolverr
-    container_name: flaresolverr
-    network_mode: service:gluetun
-    environment:
-      - TZ=${TZ}
-    restart: unless-stopped
-    depends_on:
-      - gluetun
-
-  watchtower:
-    image: containrrr/watchtower
-    container_name: watchtower
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - TZ=${TZ}
-    command: --interval 3600 --cleanup
+    networks:
+      media_net:
+        ipv4_address: 172.20.0.3
     restart: unless-stopped
 
-  tdarr:
-    image: ghcr.io/haveagitgat/tdarr:latest
+  #######################
+  ## Files and metadata##
+  ## searcher, indexer ##
+  ## and mangement     ##
+  #######################
+
+  lazylibrarian:
+    image: lscr.io/linuxserver/lazylibrarian:latest
+    container_name: lazylibrarian
     ports:
-      - "8265:8265"  # Web UI
-      - "8266:8266"  # Node API
+      - "5299:5299"
     environment:
-      - TZ=${TZ}
       - PUID=1000
       - PGID=1000
-      - UMASK_SET=002
-      - serverIP=0.0.0.0
-      - serverPort=8266
-      - webUIPort=8265
-      - internalNode=false
-      - auth=true
-      - authSecretKey= 
+      - TZ=${TZ}
+      - DOCKER_MODS=linuxserver/mods:universal-calibre|linuxserver/mods:lazylibrarian-ffmpeg
     volumes:
-      - /srv/apps/tdarr/server:/app/server
-      - /srv/apps/tdarr/config:/app/configs
-      - /mnt/media/apps/tdarr/temp:/temp
-      - /mnt/media/library:/media
+      - /srv/apps/lazylibrarian/data:/config
+      - /mnt/media/downloads/:/downloads
+      - /mnt/media/library/books:/books
+      - /mnt/media/library/books/:/audiobooks
     networks:
-     media_net:
-      ipv4_address: 172.20.0.3
+      media_net:
+        ipv4_address: 172.20.0.4
     restart: unless-stopped
 
-  unpackerr:
-    image: ghcr.io/hotio/unpackerr
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    ports:
+      - "8989:8989"
     environment:
       - PUID=1000
       - PGID=1000
-      - UMASK=002
       - TZ=${TZ}
     volumes:
-      - /srv/apps/unpackerr:/config
-      - /mnt/media/downloads:/data
+      - /srv/apps/sonarr:/config
+      - /mnt/media/downloads:/downloads
+      - /mnt/media/library/tv:/tv
+      - /mnt/media/library/anime-series:/anime
     networks:
-     media_net:
-      ipv4_address: 172.20.0.4
+      media_net:
+        ipv4_address: 172.20.0.5
     restart: unless-stopped
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    ports:
+      - "7878:7878"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+    volumes:
+      - /srv/apps/radarr:/config
+      - /mnt/media/downloads:/downloads
+      - /mnt/media/library/movies:/movies
+      - /mnt/media/library/anime-movies:/anime
+    networks:
+      media_net:
+        ipv4_address: 172.20.0.6
+    restart: unless-stopped
+
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    ports:
+      - "6767:6767"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+    volumes:
+      - /srv/apps/bazarr:/config
+      - /mnt/media/library/movies:/movies
+      - /mnt/media/library/tv:/tv
+      - /mnt/media/library/anime-series:/anime-series
+      - /mnt/media/library/anime-movies:/anime-movies
+    networks:
+      media_net:
+        ipv4_address: 172.20.0.7
+    restart: unless-stopped
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    ports:
+      - "9696:9696"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+    volumes:
+      - /srv/apps/prowlarr:/config
+    networks:
+      media_net:
+        ipv4_address: 172.20.0.8
+    restart: unless-stopped
+
+  huntarr:
+    image: huntarr/huntarr:latest
+    container_name: huntarr
+    ports:
+      - "9705:9705"
+    volumes:
+      - /srv/apps/huntarr:/config
+    environment:
+      - TZ=${TZ}
+    networks:
+      media_net:
+        ipv4_address: 172.20.0.9
+    restart: always
 
   beets:
     build:
@@ -246,24 +223,8 @@ services:
     ports:
       - 8337:8337
     networks:
-     media_net:
-      ipv4_address: 172.20.0.5
-    restart: unless-stopped
-
-  jellyseerr:
-    image: ghcr.io/hotio/jellyseerr
-    ports:
-      - "5055:5055"
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - UMASK=002
-      - TZ= ${TZ}
-    volumes:
-      - /srv/apps/jellyseerr:/config
-    networks:
-     media_net:
-      ipv4_address: 172.20.0.6
+      media_net:
+        ipv4_address: 172.20.0.10
     restart: unless-stopped
 
   qbitmanage:
@@ -277,11 +238,61 @@ services:
       - /srv/apps/qbitmanage/config:/config
       - /mnt/media/downloads:/downloads
     networks:
-     media_net:
-      ipv4_address: 172.20.0.7
+      media_net:
+        ipv4_address: 172.20.0.11
     restart: unless-stopped
     depends_on:
       - qbittorrent
+
+  #####################
+  ## File transcoder ##
+  #####################
+
+  tdarr:
+    image: ghcr.io/haveagitgat/tdarr:latest
+    ports:
+      - "8265:8265" # Web UI
+      - "8266:8266" # Node API
+    environment:
+      - TZ=${TZ}
+      - PUID=1000
+      - PGID=1000
+      - UMASK_SET=002
+      - serverIP=0.0.0.0
+      - serverPort=8266
+      - webUIPort=8265
+      - internalNode=false
+      - auth=true
+      - authSecretKey=
+    volumes:
+      - /srv/apps/tdarr/server:/app/server
+      - /srv/apps/tdarr/config:/app/configs
+      - /mnt/media/apps/tdarr/temp:/temp
+      - /mnt/media/library:/media
+    networks:
+      media_net:
+        ipv4_address: 172.20.0.12
+    restart: unless-stopped
+
+  #####################
+  ##  Media players  ##
+  #####################
+
+  jellyseerr:
+    image: ghcr.io/hotio/jellyseerr
+    ports:
+      - "5055:5055"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - UMASK=002
+      - TZ= ${TZ}
+    volumes:
+      - /srv/apps/jellyseerr:/config
+    networks:
+      media_net:
+        ipv4_address: 172.20.0.13
+    restart: unless-stopped
 
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
@@ -294,15 +305,15 @@ services:
       - /mnt/media/library/anime-movies:/anime-movies:ro
       - /mnt/media/fonts:/usr/local/share/fonts/custom:ro
     ports:
-      - "8096:8096" 
+      - "8096:8096"
       - "8920:8920"
       - "7359:7359/udp"
       - "1900:1900/udp"
     environment:
       - TZ=${TZ}
     networks:
-     media_net:
-      ipv4_address: 172.20.0.8
+      media_net:
+        ipv4_address: 172.20.0.14
     restart: unless-stopped
 
   calibre-web:
@@ -319,17 +330,17 @@ services:
       - /mnt/media/library/books:/books
       - /mnt/media/library/books/:/audiobooks
     ports:
-      - 8083:8083 
+      - 8083:8083
     networks:
-     media_net:
-      ipv4_address: 172.20.0.9
+      media_net:
+        ipv4_address: 172.20.0.15
     restart: unless-stopped
-  
+
   navidrome:
     image: deluan/navidrome:latest
     user: 1000:1000
     ports:
-      - "4533:4533" 
+      - "4533:4533"
     environment:
       - TZ=${TZ}
       - ND_LOGLEVEL=info
@@ -339,8 +350,8 @@ services:
       - "/srv/apps/navidrome:/data"
       - "/mnt/media/library/music:/music:ro"
     networks:
-     media_net:
-      ipv4_address: 172.20.0.10
+      media_net:
+        ipv4_address: 172.20.0.16
     restart: unless-stopped
 
   homarr:
@@ -353,30 +364,52 @@ services:
     environment:
       - SECRET_ENCRYPTION_KEY=${SECRET_KEY}
     networks:
-     media_net:
-      ipv4_address: 172.20.0.11
+      media_net:
+        ipv4_address: 172.20.0.17
     ports:
-      - '7575:7575'
+      - "7575:7575"
 
-  huntarr:
-    image: huntarr/huntarr:latest
-    container_name: huntarr
+  #####################
+  ##      Tools      ##
+  #####################
+
+  flaresolverr:
+    image: flaresolverr/flaresolverr
+    container_name: flaresolverr
     ports:
-      - "9705:9705"
-    volumes:
-      - /srv/apps/huntarr:/config
+      - "8191:8191"
     environment:
       - TZ=${TZ}
     networks:
-     media_net:
-      ipv4_address: 172.20.0.12
-    restart: always
+      media_net:
+        ipv4_address: 172.20.0.18
+    restart: unless-stopped
 
+  unpackerr:
+    image: ghcr.io/hotio/unpackerr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - UMASK=002
+      - TZ=${TZ}
+    volumes:
+      - /srv/apps/unpackerr:/config
+      - /mnt/media/downloads:/data
+    networks:
+      media_net:
+        ipv4_address: 172.20.0.19
+    restart: unless-stopped
 
+  #######################
+  ## Containers updater##
+  #######################
 
-networks:
-  media_net:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.20.0.0/24
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - TZ=${TZ}
+    command: --interval 3600 --cleanup
+    restart: unless-stopped
