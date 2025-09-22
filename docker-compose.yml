@@ -348,6 +348,9 @@ services:
       - LC_ALL=it_IT.UTF-8
       - PASSWORD= #optional
       - CLI_ARGS= #optional
+      - CUSTOM_PORT=8084
+      - CUSTOM_HTTPS_PORT=8085
+      - CUSTOM_WS_PORT=8086
     volumes:
       - /opt/apps/calibre/config:/config
     ports:
