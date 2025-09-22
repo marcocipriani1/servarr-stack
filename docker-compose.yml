@@ -337,7 +337,7 @@ services:
     restart: unless-stopped
 
   calibre:
-    image: lscr.io/linuxserver/calibre:latest
+    image: lscr.io/linuxserver/calibre:v4
     container_name: calibre
     security_opt:
       - seccomp:unconfined #optional
@@ -349,7 +349,6 @@ services:
       - PASSWORD= #optional
       - CLI_ARGS= #optional
       - CUSTOM_PORT=8084
-      - CUSTOM_HTTPS_PORT=8085
       - CUSTOM_WS_PORT=8086
     volumes:
       - /opt/apps/calibre/config:/config
