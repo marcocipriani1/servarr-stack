@@ -351,9 +351,9 @@ services:
     volumes:
       - /opt/apps/calibre/config:/config
     ports:
-      - 8080:8084
+      - 8084:8084
       - 8181:8181
-      - 8081:8085
+      - 8085:8085
     networks:
       media_net:
         ipv4_address: 172.20.0.16
