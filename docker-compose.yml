@@ -328,12 +328,32 @@ services:
     volumes:
       - /opt/apps/calibre-web/data:/config
       - /mnt/media/library/books:/books
-      - /mnt/media/library/books/:/audiobooks
+      - /mnt/media/library/audiobooks/:/audiobooks
     ports:
       - 8083:8083
     networks:
       media_net:
         ipv4_address: 172.20.0.15
+    restart: unless-stopped
+
+  calibre:
+    image: lscr.io/linuxserver/calibre:latest
+    container_name: calibre
+    security_opt:
+      - seccomp:unconfined #optional
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+      - LC_ALL=it_IT.UTF-8
+      - PASSWORD= #optional
+      - CLI_ARGS= #optional
+    volumes:
+      - /opt/apps/calibre/config:/config
+    ports:
+      - 8080:8080
+      - 8181:8181
+      - 8081:8081
     restart: unless-stopped
 
   navidrome:
