@@ -1,5 +1,8 @@
 FROM lscr.io/linuxserver/beets:latest
 
+# Copy local plugin source into the container
+COPY beets-follow/ /tmp/beets-follow/
+
 # Install required Python packages for beets plugins
 RUN pip install --no-cache-dir \
   beets[badfiles,chroma,lastgenre,lastimport,discogs,replaygain,fetchart,lyrics,mbsubmit,mbsync] \
@@ -9,6 +12,6 @@ RUN pip install --no-cache-dir \
   beets-copyartifacts3 \
   beautifulsoup4 \
   discogs-client \
-  beets-follow \
   beets-check \
-  requests
+  requests \
+  && pip install --no-cache-dir /tmp/beets-follow
