@@ -28,7 +28,7 @@ services:
       - FIREWALL_VPN_INPUT_PORTS=8080,33844,8787,5030,5031,33845
       - HEALTH_SUCCESS_WAIT_DURATION=99999h
     volumes:
-      - /srv/apps/gluetun:/gluetun
+      - /opt/apps/gluetun:/gluetun
     ports:
       - "8080:8080" # qBittorrent Web UI
       - "33844:33844" # qBittorrent incoming TCP torrent port
@@ -55,7 +55,7 @@ services:
       - WEBUI_PORT=8080
       - TORRENTING_PORT=6881
     volumes:
-      - /srv/apps/qbittorrent:/config
+      - /opt/apps/qbittorrent:/config
       - /mnt/media/downloads:/downloads
     restart: unless-stopped
     depends_on:
@@ -71,7 +71,7 @@ services:
       - TZ=${TZ}
       - SLSKD_REMOTE_CONFIGURATION=true
     volumes:
-      - /srv/apps/slskd:/app
+      - /opt/apps/slskd:/app
       - /mnt/media/downloads/complete/music:/data/downloads
       - /mnt/media/downloads/incomplete:/data/incomplete_downloads
       - /mnt/media/library/music:/data/music
@@ -90,7 +90,7 @@ services:
       - UMASK=002
       - TZ=${TZ}
     volumes:
-      - /srv/apps/sabnzbd/config:/config
+      - /opt/apps/sabnzbd/config:/config
       - /mnt/media/downloads:/data
     networks:
       media_net:
@@ -114,7 +114,7 @@ services:
       - TZ=${TZ}
       - DOCKER_MODS=linuxserver/mods:universal-calibre|linuxserver/mods:lazylibrarian-ffmpeg
     volumes:
-      - /srv/apps/lazylibrarian/data:/config
+      - /opt/apps/lazylibrarian/data:/config
       - /mnt/media/downloads/:/downloads
       - /mnt/media/library/books:/books
       - /mnt/media/library/books/:/audiobooks
@@ -132,7 +132,7 @@ services:
       - PGID=1000
       - TZ=${TZ}
     volumes:
-      - /srv/apps/sonarr:/config
+      - /opt/apps/sonarr:/config
       - /mnt/media/downloads:/downloads
       - /mnt/media/library/tv:/tv
       - /mnt/media/library/anime-series:/anime
@@ -150,7 +150,7 @@ services:
       - PGID=1000
       - TZ=${TZ}
     volumes:
-      - /srv/apps/radarr:/config
+      - /opt/apps/radarr:/config
       - /mnt/media/downloads:/downloads
       - /mnt/media/library/movies:/movies
       - /mnt/media/library/anime-movies:/anime
@@ -168,7 +168,7 @@ services:
       - PGID=1000
       - TZ=${TZ}
     volumes:
-      - /srv/apps/bazarr:/config
+      - /opt/apps/bazarr:/config
       - /mnt/media/library/movies:/movies
       - /mnt/media/library/tv:/tv
       - /mnt/media/library/anime-series:/anime-series
@@ -187,7 +187,7 @@ services:
       - PGID=1000
       - TZ=${TZ}
     volumes:
-      - /srv/apps/prowlarr:/config
+      - /opt/apps/prowlarr:/config
     networks:
       media_net:
         ipv4_address: 172.20.0.8
@@ -199,7 +199,7 @@ services:
     ports:
       - "9705:9705"
     volumes:
-      - /srv/apps/huntarr:/config
+      - /opt/apps/huntarr:/config
     environment:
       - TZ=${TZ}
     networks:
@@ -217,7 +217,7 @@ services:
       - PGID=1000
       - TZ=${TZ}
     volumes:
-      - /srv/apps/beets/config:/config
+      - /opt/apps/beets/config:/config
       - /mnt/media/library/music:/music
       - /mnt/media/downloads/complete/music:/downloads
     ports:
@@ -235,7 +235,7 @@ services:
       - UMASK=002
       - TZ=${TZ}
     volumes:
-      - /srv/apps/qbitmanage/config:/config
+      - /opt/apps/qbitmanage/config:/config
       - /mnt/media/downloads:/downloads
     networks:
       media_net:
@@ -265,8 +265,8 @@ services:
       - auth=true
       - authSecretKey=
     volumes:
-      - /srv/apps/tdarr/server:/app/server
-      - /srv/apps/tdarr/config:/app/configs
+      - /opt/apps/tdarr/server:/app/server
+      - /opt/apps/tdarr/config:/app/configs
       - /mnt/media/apps/tdarr/temp:/temp
       - /mnt/media/library:/media
     networks:
@@ -297,8 +297,8 @@ services:
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
     volumes:
-      - /srv/apps/jellyfin/config:/config
-      - /srv/apps/jellyfin/cache:/cache
+      - /opt/apps/jellyfin/config:/config
+      - /opt/apps/jellyfin/cache:/cache
       - /mnt/media/library/movies:/media/movies:ro
       - /mnt/media/library/tv:/media/tv:ro
       - /mnt/media/library/anime-series:/anime-series:ro
@@ -326,7 +326,7 @@ services:
       - DOCKER_MODS=linuxserver/mods:universal-calibre
       - OAUTHLIB_RELAX_TOKEN_SCOPE=1
     volumes:
-      - /srv/apps/calibre-web/data:/config
+      - /opt/apps/calibre-web/data:/config
       - /mnt/media/library/books:/books
       - /mnt/media/library/books/:/audiobooks
     ports:
@@ -347,7 +347,7 @@ services:
       - ND_SCANINTERVAL=1h
       - ND_SESSIONTIMEOUT=24h
     volumes:
-      - "/srv/apps/navidrome:/data"
+      - "/opt/apps/navidrome:/data"
       - "/mnt/media/library/music:/music:ro"
     networks:
       media_net:
@@ -360,7 +360,7 @@ services:
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /srv/apps/homarr/appdata:/appdata
+      - /opt/apps/homarr/appdata:/appdata
     environment:
       - SECRET_ENCRYPTION_KEY=${SECRET_KEY}
     networks:
@@ -393,7 +393,7 @@ services:
       - UMASK=002
       - TZ=${TZ}
     volumes:
-      - /srv/apps/unpackerr:/config
+      - /opt/apps/unpackerr:/config
       - /mnt/media/downloads:/data
     networks:
       media_net:
