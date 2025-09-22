@@ -354,6 +354,9 @@ services:
       - 8080:8080
       - 8181:8181
       - 8081:8081
+    networks:
+      media_net:
+        ipv4_address: 172.20.0.16
     restart: unless-stopped
 
   navidrome:
@@ -371,7 +374,7 @@ services:
       - "/mnt/media/library/music:/music:ro"
     networks:
       media_net:
-        ipv4_address: 172.20.0.16
+        ipv4_address: 172.20.0.17
     restart: unless-stopped
 
   homarr:
@@ -385,7 +388,7 @@ services:
       - SECRET_ENCRYPTION_KEY=${SECRET_KEY}
     networks:
       media_net:
-        ipv4_address: 172.20.0.17
+        ipv4_address: 172.20.0.18
     ports:
       - "7575:7575"
 
@@ -402,7 +405,7 @@ services:
       - TZ=${TZ}
     networks:
       media_net:
-        ipv4_address: 172.20.0.18
+        ipv4_address: 172.20.0.19
     restart: unless-stopped
 
   unpackerr:
@@ -417,7 +420,7 @@ services:
       - /mnt/media/downloads:/data
     networks:
       media_net:
-        ipv4_address: 172.20.0.19
+        ipv4_address: 172.20.0.20
     restart: unless-stopped
 
   #######################
