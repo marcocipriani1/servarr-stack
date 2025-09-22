@@ -337,7 +337,7 @@ services:
     restart: unless-stopped
 
   calibre:
-    image: lscr.io/linuxserver/calibre:v4
+    image: lscr.io/linuxserver/calibre:0.6.25
     container_name: calibre
     security_opt:
       - seccomp:unconfined #optional
