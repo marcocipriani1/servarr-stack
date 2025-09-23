@@ -346,6 +346,7 @@ services:
       - /opt/apps/jellyfin/cache:/cache
       - /mnt/media/library/movies:/media/movies:ro
       - /mnt/media/library/tv:/media/tv:ro
+      - /mnt/media/library/audiobooks:/audiobooks:ro
       - /mnt/media/library/anime-series:/anime-series:ro
       - /mnt/media/library/anime-movies:/anime-movies:ro
       - /mnt/media/fonts:/usr/local/share/fonts/custom:ro
