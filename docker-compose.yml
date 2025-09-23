@@ -370,8 +370,10 @@ services:
       - PGID=1000
       - TZ=Etc/UTC
     volumes:
-      - /path/to/kavita/config:/config
-      - /path/to/data:/data #optional
+      - /opt/apps/kavita/config:/config
+      - /mnt/media/library/books:/books
+      - /mnt/media/library/comics:/comics
+      - /mnt/media/library/manga:/manga
     ports:
       - 5000:5000
     networks:
