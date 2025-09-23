@@ -270,7 +270,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Etc/UTC
+      - TZ=${TZ}
       - KOMETA_CONFIG=/config/config.yml #optional
       - KOMETA_TIME=03:00 #optional
       - KOMETA_RUN=False #optional
@@ -441,7 +441,7 @@ services:
     networks:
       media_net:
         ipv4_address: 172.20.0.20
-    restart: unless-stoppe
+    restart: unless-stopped
 
   #####################
   ##      Tools      ##
