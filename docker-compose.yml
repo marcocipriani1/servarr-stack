@@ -471,7 +471,7 @@ services:
       - /mnt/media/downloads:/data
     networks:
       media_net:
-        ipv4_address: 172.20.0.19
+        ipv4_address: 172.20.0.22
     restart: unless-stopped
 
   #######################
