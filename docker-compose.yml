@@ -362,22 +362,18 @@ services:
         ipv4_address: 172.20.0.16
     restart: unless-stopped
 
-  ubooquity:
-    image: lscr.io/linuxserver/ubooquity:latest
-    container_name: ubooquity
+  kavita:
+    image: lscr.io/linuxserver/kavita:latest
+    container_name: kavita
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=${TZ}
-      - MAXMEM= #optional
+      - TZ=Etc/UTC
     volumes:
-      - /opt/apps/ubooquity/data:/config
-      - /mnt/media/library/books:/books
-      - /mnt/media/library/comics:/comics
-      - /mnt/media/library/manga:/manga
+      - /path/to/kavita/config:/config
+      - /path/to/data:/data #optional
     ports:
-      - 2202:2202
-      - 2203:2203
+      - 5000:5000
     networks:
       media_net:
         ipv4_address: 172.20.0.17
