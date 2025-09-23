@@ -362,23 +362,22 @@ services:
         ipv4_address: 172.20.0.16
     restart: unless-stopped
 
-  calibre:
-    image: lscr.io/linuxserver/calibre:latest
-    container_name: calibre
-    security_opt:
-      - seccomp:unconfined #optional
+  ubooquity:
+    image: lscr.io/linuxserver/ubooquity:latest
+    container_name: ubooquity
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=${TZ}
-      - CUSTOM_PORT=8084
-      - CUSTOM_WS_PORT=8085
+      - TZ=Etc/UTC
+      - MAXMEM= #optional
     volumes:
-      - /opt/apps/calibre/config:/config
+      - /opt/apps/ubooquity/data:/config
+      - /mnt/media/library/books:/books
+      - /mnt/media/library/comics:/comics
+      - /mnt/media/library/manga:/manga
     ports:
-      - 8084:8084
-      - 8181:8181
-      - 8085:8085
+      - 2202:2202
+      - 2203:2203
     networks:
       media_net:
         ipv4_address: 172.20.0.17
@@ -402,25 +401,6 @@ services:
         ipv4_address: 172.20.0.18
     restart: unless-stopped
 
-  spotube:
-    image: lscr.io/linuxserver/spotube:latest
-    container_name: spotube
-    security_opt:
-      - seccomp:unconfined #optional
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Etc/UTC
-    volumes:
-      - /opt/apps/spotube/config:/config
-    ports:
-      - 3000:3000
-      - 3001:3001
-    networks:
-      media_net:
-        ipv4_address: 172.20.0.19
-    restart: unless-stopped
-
   #####################
   ##    Dashboard    ##
   #####################
@@ -440,7 +420,7 @@ services:
       - 443:443
     networks:
       media_net:
-        ipv4_address: 172.20.0.20
+        ipv4_address: 172.20.0.19
     restart: unless-stopped
 
   #####################
@@ -456,7 +436,7 @@ services:
       - TZ=${TZ}
     networks:
       media_net:
-        ipv4_address: 172.20.0.21
+        ipv4_address: 172.20.0.20
     restart: unless-stopped
 
   unpackerr:
@@ -471,7 +451,7 @@ services:
       - /mnt/media/downloads:/data
     networks:
       media_net:
-        ipv4_address: 172.20.0.22
+        ipv4_address: 172.20.0.21
     restart: unless-stopped
 
   #######################
