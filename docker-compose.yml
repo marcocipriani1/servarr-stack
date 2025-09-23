@@ -368,7 +368,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Etc/UTC
+      - TZ=${TZ}
       - MAXMEM= #optional
     volumes:
       - /opt/apps/ubooquity/data:/config
