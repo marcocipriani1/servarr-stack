@@ -159,6 +159,26 @@ services:
         ipv4_address: 172.20.0.6
     restart: unless-stopped
 
+  mylar3:
+    image: lscr.io/linuxserver/mylar3:latest
+    container_name: mylar3
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+    volumes:
+      - /opt/apps/mylar3/config:/config
+      - /mnt/media/library/comics:/comics
+      - /mnt/media/library/manga:/manga
+      - /mnt/media/downloads/completed/comics:/downloads/comics
+      - /mnt/media/downloads/completed/manga:/downloads/manga
+    networks:
+      media_net:
+        ipv4_address: 172.20.0.7
+    ports:
+      - 8090:8090
+    restart: unless-stopped
+
   bazarr:
     image: lscr.io/linuxserver/bazarr:latest
     ports:
@@ -175,7 +195,7 @@ services:
       - /mnt/media/library/anime-movies:/anime-movies
     networks:
       media_net:
-        ipv4_address: 172.20.0.7
+        ipv4_address: 172.20.0.8
     restart: unless-stopped
 
   prowlarr:
@@ -190,7 +210,7 @@ services:
       - /opt/apps/prowlarr:/config
     networks:
       media_net:
-        ipv4_address: 172.20.0.8
+        ipv4_address: 172.20.0.9
     restart: unless-stopped
 
   huntarr:
@@ -204,7 +224,7 @@ services:
       - TZ=${TZ}
     networks:
       media_net:
-        ipv4_address: 172.20.0.9
+        ipv4_address: 172.20.0.10
     restart: always
 
   beets:
@@ -224,7 +244,7 @@ services:
       - 8337:8337
     networks:
       media_net:
-        ipv4_address: 172.20.0.10
+        ipv4_address: 172.20.0.11
     restart: unless-stopped
 
   qbitmanage:
@@ -239,10 +259,29 @@ services:
       - /mnt/media/downloads:/downloads
     networks:
       media_net:
-        ipv4_address: 172.20.0.11
+        ipv4_address: 172.20.0.12
     restart: unless-stopped
     depends_on:
       - qbittorrent
+
+  kometa:
+    image: lscr.io/linuxserver/kometa:latest
+    container_name: kometa
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - KOMETA_CONFIG=/config/config.yml #optional
+      - KOMETA_TIME=03:00 #optional
+      - KOMETA_RUN=False #optional
+      - KOMETA_TEST=False #optional
+      - KOMETA_NO_MISSING=False #optional
+    networks:
+      media_net:
+        ipv4_address: 172.20.0.13
+    volumes:
+      - /opt/apps/kometa/config:/config
+    restart: unless-stopped
 
   #####################
   ## File transcoder ##
@@ -271,7 +310,7 @@ services:
       - /mnt/media/library:/media
     networks:
       media_net:
-        ipv4_address: 172.20.0.12
+        ipv4_address: 172.20.0.14
     restart: unless-stopped
 
   #####################
@@ -297,7 +336,7 @@ services:
       retries: 3
     networks:
       media_net:
-        ipv4_address: 172.20.0.13
+        ipv4_address: 172.20.0.15
     restart: unless-stopped
 
   jellyfin:
@@ -319,24 +358,29 @@ services:
       - TZ=${TZ}
     networks:
       media_net:
-        ipv4_address: 172.20.0.14
+        ipv4_address: 172.20.0.16
     restart: unless-stopped
 
-  kavita:
-    image: jvmilazz0/kavita:latest # Using the stable branch from the official dockerhub repo.
-    container_name: kavita
-    volumes:
-      - /mnt/media/library/manga:/manga
-      - /mnt/media/library/comics:/comics
-      - /mnt/media/library/books:/books
-      - /opt/apps/kavita/config:/kavita/config # /kavita/config must not be changed
+  calibre:
+    image: lscr.io/linuxserver/calibre:latest
+    container_name: calibre
+    security_opt:
+      - seccomp:unconfined #optional
     environment:
+      - PUID=1000
+      - PGID=1000
       - TZ=${TZ}
+      - CUSTOM_PORT=8084
+      - CUSTOM_WS_PORT=8085
+    volumes:
+      - /opt/apps/calibre/config:/config
     ports:
-      - "5000:5000"
+      - 8084:8084
+      - 8181:8181
+      - 8085:8085
     networks:
       media_net:
-        ipv4_address: 172.20.0.15
+        ipv4_address: 172.20.0.17
     restart: unless-stopped
 
   navidrome:
@@ -354,23 +398,49 @@ services:
       - "/mnt/media/library/music:/music:ro"
     networks:
       media_net:
-        ipv4_address: 172.20.0.16
+        ipv4_address: 172.20.0.18
     restart: unless-stopped
 
-  homarr:
-    container_name: homarr
-    image: ghcr.io/homarr-labs/homarr:latest
-    restart: unless-stopped
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /opt/apps/homarr/appdata:/appdata
+  spotube:
+    image: lscr.io/linuxserver/spotube:latest
+    container_name: spotube
+    security_opt:
+      - seccomp:unconfined #optional
     environment:
-      - SECRET_ENCRYPTION_KEY=${SECRET_KEY}
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - /opt/apps/spotube/config:/config
+    ports:
+      - 3000:3000
+      - 3001:3001
     networks:
       media_net:
-        ipv4_address: 172.20.0.17
+        ipv4_address: 172.20.0.19
+    restart: unless-stopped
+
+  #####################
+  ##    Dashboard    ##
+  #####################
+
+  heimdall:
+    image: lscr.io/linuxserver/heimdall:latest
+    container_name: heimdall
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - ALLOW_INTERNAL_REQUESTS=false #optional
+    volumes:
+      - /opt/apps/heimdall/config:/config
     ports:
-      - "7575:7575"
+      - 80:80
+      - 443:443
+    networks:
+      media_net:
+        ipv4_address: 172.20.0.20
+    restart: unless-stoppe
 
   #####################
   ##      Tools      ##
@@ -385,7 +455,7 @@ services:
       - TZ=${TZ}
     networks:
       media_net:
-        ipv4_address: 172.20.0.18
+        ipv4_address: 172.20.0.21
     restart: unless-stopped
 
   unpackerr:
