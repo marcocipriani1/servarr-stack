@@ -279,7 +279,7 @@ services:
   #####################
 
   jellyseerr:
-    image: ghcr.io/hotio/jellyseerr
+    image: fallenbagel/jellyseerr:latest
     ports:
       - "5055:5055"
     environment:
@@ -288,7 +288,7 @@ services:
       - UMASK=002
       - TZ= ${TZ}
     volumes:
-      - /srv/apps/jellyseerr:/config
+      - /opt/apps/jellyseerr:/config
     networks:
       media_net:
         ipv4_address: 172.20.0.13
@@ -316,49 +316,21 @@ services:
         ipv4_address: 172.20.0.14
     restart: unless-stopped
 
-  calibre-web:
-    image: lscr.io/linuxserver/calibre-web:latest
-    container_name: calibre-web
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=${TZ}
-      - DOCKER_MODS=linuxserver/mods:universal-calibre
-      - OAUTHLIB_RELAX_TOKEN_SCOPE=1
+  kavita:
+    image: jvmilazz0/kavita:latest # Using the stable branch from the official dockerhub repo.
+    container_name: kavita
     volumes:
-      - /opt/apps/calibre-web/data:/config
+      - /mnt/media/library/manga:/manga
+      - /mnt/media/library/comics:/comics
       - /mnt/media/library/books:/books
-      - /mnt/media/library/audiobooks/:/audiobooks
+      - /opt/apps/kavita/config:/kavita/config # /kavita/config must not be changed
+    environment:
+      - TZ=${TZ}
     ports:
-      - 8083:8083
+      - "5000:5000"
     networks:
       media_net:
         ipv4_address: 172.20.0.15
-    restart: unless-stopped
-
-  calibre:
-    image: lscr.io/linuxserver/calibre:8.10.0
-    container_name: calibre
-    security_opt:
-      - seccomp:unconfined #optional
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=${TZ}
-      - LC_ALL=it_IT.UTF-8
-      - PASSWORD= #optional
-      - CLI_ARGS= #optional
-      - CUSTOM_PORT=8084
-      - CUSTOM_WS_PORT=8086
-    volumes:
-      - /opt/apps/calibre/config:/config
-    ports:
-      - 8084:8084
-      - 8181:8181
-      - 8085:8085
-    networks:
-      media_net:
-        ipv4_address: 172.20.0.16
     restart: unless-stopped
 
   navidrome:
@@ -376,7 +348,7 @@ services:
       - "/mnt/media/library/music:/music:ro"
     networks:
       media_net:
-        ipv4_address: 172.20.0.17
+        ipv4_address: 172.20.0.16
     restart: unless-stopped
 
   homarr:
@@ -390,7 +362,7 @@ services:
       - SECRET_ENCRYPTION_KEY=${SECRET_KEY}
     networks:
       media_net:
-        ipv4_address: 172.20.0.18
+        ipv4_address: 172.20.0.17
     ports:
       - "7575:7575"
 
@@ -407,7 +379,7 @@ services:
       - TZ=${TZ}
     networks:
       media_net:
-        ipv4_address: 172.20.0.19
+        ipv4_address: 172.20.0.18
     restart: unless-stopped
 
   unpackerr:
@@ -422,7 +394,7 @@ services:
       - /mnt/media/downloads:/data
     networks:
       media_net:
-        ipv4_address: 172.20.0.20
+        ipv4_address: 172.20.0.19
     restart: unless-stopped
 
   #######################
